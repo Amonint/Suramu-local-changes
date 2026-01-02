@@ -144,31 +144,38 @@ def receive_message():
         messages = value.get("messages", [])
 
         if not messages:
+            app.logger.info("[receive_message] no messages in payload")
             return jsonify({"status": "no_message"}), 200
 
         msg = messages[0]
         text = msg.get("text", {}).get("body", "").strip()
         from_number = msg.get("from")
 
+        app.logger.info(f"[receive_message] text={text} from={from_number}")
+
         if text == "1":
             row = fetch_first_row(DEFAULT_TABLE)
             if row:
+                app.logger.info(f"[receive_message] sending row from {DEFAULT_TABLE}")
                 send_whatsapp_message(
                     f"Fila de {DEFAULT_TABLE}:\n{json.dumps(row, ensure_ascii=False, indent=2)}",
                     from_number,
                 )
             else:
+                app.logger.info("[receive_message] no row found, sending fallback")
                 send_whatsapp_message(
                     f"No encontré datos en {DEFAULT_TABLE} o hubo un error.",
                     from_number,
                 )
         else:
+            app.logger.info("[receive_message] sending help text")
             send_whatsapp_message(
                 "Envía 1 para recibir una muestra de datos.", from_number
             )
         return jsonify({"status": "ok"}), 200
     except Exception as e:
         print(f"❌ Error procesando webhook: {e}")
+        app.logger.exception(f"[receive_message] exception: {e}")
         return jsonify({"status": "error", "detail": str(e)}), 200
 
 # ==================== FUNCIÓN AUXILIAR: VALIDAR CREDENCIALES ====================
