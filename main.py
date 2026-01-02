@@ -67,23 +67,19 @@ def send_whatsapp_message(message_body: str, recipient_number: str):
     }
     
     try:
-        # Hacer el POST request
+        app.logger.info(f"[send_whatsapp_message] to={recipient_number} body={message_body}")
         response = requests.post(url, headers=headers, json=payload, timeout=15)
-        
-        # Verificar respuesta
         if response.status_code == 200:
             result = response.json()
-            print(f"✅ Mensaje enviado exitosamente!")
-            print(f"Message ID: {result.get('messages')[0].get('id')}")
+            app.logger.info(f"[send_whatsapp_message] ok id={result.get('messages')[0].get('id')}")
             return result
         else:
-            print(f"❌ Error al enviar mensaje")
-            print(f"Status Code: {response.status_code}")
-            print(f"Respuesta: {response.json()}")
+            app.logger.error(
+                f"[send_whatsapp_message] fail status={response.status_code} resp={response.text}"
+            )
             return None
-            
     except Exception as e:
-        print(f"❌ Error en la solicitud: {str(e)}")
+        app.logger.exception(f"[send_whatsapp_message] exception: {e}")
         return None
 
 
@@ -138,9 +134,9 @@ def receive_message():
     """
     body = request.get_json(force=True, silent=True) or {}
     try:
-        print(f"📥 Webhook payload: {json.dumps(body, ensure_ascii=False)}")
-    except Exception:
-        pass
+        app.logger.info(f"📥 Webhook payload: {json.dumps(body, ensure_ascii=False)}")
+    except Exception as e:
+        app.logger.error(f"[receive_message] error logging payload: {e}")
     try:
         # Navegar estructura de Meta
         entry = body.get("entry", [])[0]
