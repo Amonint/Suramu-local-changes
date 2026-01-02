@@ -129,6 +129,10 @@ def receive_message():
     """
     body = request.get_json(force=True, silent=True) or {}
     try:
+        print(f"📥 Webhook payload: {json.dumps(body, ensure_ascii=False)}")
+    except Exception:
+        pass
+    try:
         # Navegar estructura de Meta
         entry = body.get("entry", [])[0]
         changes = entry.get("changes", [])[0]
