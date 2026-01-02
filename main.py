@@ -1,5 +1,7 @@
 import json
 import os
+import logging
+import sys
 from typing import Any, Dict, Optional
 
 import requests
@@ -22,6 +24,13 @@ SUPABASE_SERVICE_ROLE = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 DEFAULT_TABLE = os.getenv("SUPABASE_TABLE", "notebooks")
 
 app = Flask(__name__)
+
+# Logging: enviar a stdout para que Render/Gunicorn lo capture
+app.logger.setLevel(logging.INFO)
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s %(message)s"))
+if not app.logger.handlers:
+    app.logger.addHandler(handler)
 
 # ==================== FUNCIÓN PARA ENVIAR MENSAJE ====================
 def send_whatsapp_message(message_body: str, recipient_number: str):
