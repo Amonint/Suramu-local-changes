@@ -24,5 +24,5 @@ COPY . .
 # Exponer el puerto usado por la app
 EXPOSE 8080
 
-# Comando de arranque con gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:${PORT}", "main:app"]
+# Comando de arranque con gunicorn (Render y otros pasan PORT como env)
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT:-8080} main:app"]
