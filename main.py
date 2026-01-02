@@ -12,7 +12,7 @@ load_dotenv()
 # ==================== CONFIGURACIÓN (usar .env) ====================
 ACCESS_TOKEN = os.getenv("WHATSAPP_ACCESS_TOKEN", "")
 PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID", "")
-API_VERSION = os.getenv("WHATSAPP_API_VERSION", "v22.0")
+API_VERSION = os.getenv("WHATSAPP_API_VERSION", "v24.0")
 VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFY_TOKEN", "my-verify-token")  # usado por webhook GET
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
