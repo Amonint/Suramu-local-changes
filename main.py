@@ -186,6 +186,42 @@ def validate_credentials():
     print("✅ Credenciales validadas")
     return True
 
+
+# ==================== ENDPOINT DE PRUEBA DE ENVÍO ====================
+@app.route("/test-send", methods=["GET"])
+def test_send():
+    """
+    Envía un mensaje de prueba al número indicado (query param ?to=).
+    Si no se pasa 'to', usa el mismo número que recibimos en el webhook.
+    """
+    to_number = request.args.get("to", "593961022800").replace("+", "")
+    url = f"https://graph.facebook.com/{API_VERSION}/{PHONE_NUMBER_ID}/messages"
+    headers = {
+        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to_number,
+        "type": "text",
+        "text": {"preview_url": False, "body": "Ping de prueba /test-send"},
+    }
+    try:
+        resp = requests.post(url, headers=headers, json=payload, timeout=15)
+        return (
+            jsonify(
+                {
+                    "status": resp.status_code,
+                    "response": resp.json() if resp.text else {},
+                }
+            ),
+            resp.status_code,
+        )
+    except Exception as e:
+        app.logger.exception(f"[test_send] exception: {e}")
+        return jsonify({"error": str(e)}), 500
+
 # ==================== MAIN ====================
 if __name__ == "__main__":
     # Para pruebas locales: flask --app nn run --port 8080
