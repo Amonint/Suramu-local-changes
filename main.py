@@ -1,27 +1,26 @@
 import json
-import os
 import logging
 import sys
 from typing import Any, Dict, Optional
 
 import requests
-from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 
-# Cargar variables de entorno
-load_dotenv()
+# ==================== CONFIGURACIÓN QUEMADA ====================
+ACCESS_TOKEN = (
+    "EAAT5ytMqWiYBQd6UNFk9a5uLbOZABYgMoomZBATnuZCbzX3pW4ibBPMR6qDDNCESZC8A8tu0bXMkX3ok596EHFb6kkSt6dQVtaXSi1YKZBofEnGMCWnuFDFyxe9YINhmzhi8AnImUNBOORGsPL5Yt0EMI7ggY4ZCwj19gBx4kr5YtoS5UOYwJ02pJgOPfhdon4nHyew4qvkXV3CfqkXVHdLmtGZCt2DKZAab30nl"
+)
+PHONE_NUMBER_ID = "921658871033993"
+API_VERSION = "v24.0"
+VERIFY_TOKEN = "1234"  # usado por webhook GET
 
-# ==================== CONFIGURACIÓN (usar .env) ====================
-ACCESS_TOKEN = os.getenv("WHATSAPP_ACCESS_TOKEN", "")
-PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID", "")
-API_VERSION = os.getenv("WHATSAPP_API_VERSION", "v24.0")
-VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFY_TOKEN", "my-verify-token")  # usado por webhook GET
-
-SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_SERVICE_ROLE = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+SUPABASE_URL = "https://fldoqvfhiatsdnoyjmmp.supabase.co"
+SUPABASE_SERVICE_ROLE = (
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZG9xdmZoaWF0c2Rub3lqbW1wIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NzAxNzcxMywiZXhwIjoyMDcyNTkzNzEzfQ.87QBO4bj0tRPqU6Jm908uBTb2WvXnROgNaHduknSx9k"
+)
 
 # Tabla por defecto a leer cuando llega un "1"
-DEFAULT_TABLE = os.getenv("SUPABASE_TABLE", "notebooks")
+DEFAULT_TABLE = "notebooks"
 
 app = Flask(__name__)
 
@@ -189,5 +188,5 @@ def validate_credentials():
 
 # ==================== MAIN ====================
 if __name__ == "__main__":
-    # Para pruebas locales: flask --app nn run --port 5000
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
+    # Para pruebas locales: flask --app nn run --port 8080
+    app.run(host="0.0.0.0", port=8080)

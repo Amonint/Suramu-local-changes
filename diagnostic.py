@@ -1,24 +1,27 @@
-import os
 import json
 import requests
-from typing import Optional
 
-BASE_URL = os.getenv("SERVICE_URL", "http://localhost:8080")
-RECIPIENT = os.getenv("TEST_RECIPIENT", "593961022800")  # sin +
+BASE_URL = "https://liv-chatbot.onrender.com"
+RECIPIENT = "593961022800"  # sin +
+
+WHATSAPP_ACCESS_TOKEN = (
+    "EAAT5ytMqWiYBQd6UNFk9a5uLbOZABYgMoomZBATnuZCbzX3pW4ibBPMR6qDDNCESZC8A8tu0bXMkX3ok596EHFb6kkSt6dQVtaXSi1YKZBofEnGMCWnuFDFyxe9YINhmzhi8AnImUNBOORGsPL5Yt0EMI7ggY4ZCwj19gBx4kr5YtoS5UOYwJ02pJgOPfhdon4nHyew4qvkXV3CfqkXVHdLmtGZCt2DKZAab30nl"
+)
+WHATSAPP_PHONE_NUMBER_ID = "921658871033993"
+WHATSAPP_API_VERSION = "v24.0"
 
 
 def check_env():
-    required = [
-        "WHATSAPP_ACCESS_TOKEN",
-        "WHATSAPP_PHONE_NUMBER_ID",
-        "WHATSAPP_VERIFY_TOKEN",
-        "WHATSAPP_API_VERSION",
-    ]
-    missing = [k for k in required if not os.getenv(k)]
-    print(" Env presentes" if not missing else f" Faltan env: {missing}")
-    print({k: os.getenv(k) for k in required})
-    for k in ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_TABLE"]:
-        print(f"{k}={os.getenv(k, '')}")
+    print("Valores quemados:")
+    print(
+        {
+            "WHATSAPP_ACCESS_TOKEN": "***",
+            "WHATSAPP_PHONE_NUMBER_ID": WHATSAPP_PHONE_NUMBER_ID,
+            "WHATSAPP_API_VERSION": WHATSAPP_API_VERSION,
+            "BASE_URL": BASE_URL,
+            "RECIPIENT": RECIPIENT,
+        }
+    )
 
 
 def ping_webhook():
@@ -46,14 +49,11 @@ def ping_webhook():
 
 
 def test_send_message():
-    token = os.getenv("WHATSAPP_ACCESS_TOKEN")
-    phone_id = os.getenv("WHATSAPP_PHONE_NUMBER_ID")
-    version = os.getenv("WHATSAPP_API_VERSION", "v22.0")
-    if not (token and phone_id):
-        print("❌ Falta token o phone id")
-        return
-    url = f"https://graph.facebook.com/{version}/{phone_id}/messages"
-    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    url = f"https://graph.facebook.com/{WHATSAPP_API_VERSION}/{WHATSAPP_PHONE_NUMBER_ID}/messages"
+    headers = {
+        "Authorization": f"Bearer {WHATSAPP_ACCESS_TOKEN}",
+        "Content-Type": "application/json",
+    }
     payload = {
         "messaging_product": "whatsapp",
         "to": RECIPIENT,
