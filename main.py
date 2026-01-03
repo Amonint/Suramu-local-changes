@@ -24,12 +24,21 @@ DEFAULT_TABLE = "notebooks"
 
 app = Flask(__name__)
 
-# Logging: enviar a stdout para que Render/Gunicorn lo capture
+# Logging: forzar salida a stdout para Render/Gunicorn
+for h in list(app.logger.handlers):
+    app.logger.removeHandler(h)
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s %(message)s"))
+app.logger.addHandler(stream_handler)
 app.logger.setLevel(logging.INFO)
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s %(message)s"))
-if not app.logger.handlers:
-    app.logger.addHandler(handler)
+app.logger.propagate = False
+
+# Root logger también a stdout
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[stream_handler],
+    format="[%(asctime)s] %(levelname)s %(message)s",
+)
 
 # ==================== FUNCIÓN PARA ENVIAR MENSAJE ====================
 def send_whatsapp_message(message_body: str, recipient_number: str):
@@ -177,6 +186,12 @@ def receive_message():
         print(f"❌ Error procesando webhook: {e}")
         app.logger.exception(f"[receive_message] exception: {e}")
         return jsonify({"status": "error", "detail": str(e)}), 200
+
+
+# ==================== HEALTH CHECK ====================
+@app.route("/healthz", methods=["GET"])
+def healthz():
+    return jsonify({"status": "ok"}), 200
 
 # ==================== FUNCIÓN AUXILIAR: VALIDAR CREDENCIALES ====================
 def validate_credentials():
