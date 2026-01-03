@@ -146,10 +146,17 @@ def receive_message():
     except Exception as e:
         app.logger.error(f"[receive_message] error logging payload: {e}")
     try:
-        # Navegar estructura de Meta
-        entry = body.get("entry", [])[0]
-        changes = entry.get("changes", [])[0]
-        value = changes.get("value", {})
+        entries = body.get("entry", [])
+        if not entries:
+            app.logger.info("[receive_message] no entry in payload")
+            return jsonify({"status": "no_entry"}), 200
+
+        changes = entries[0].get("changes", [])
+        if not changes:
+            app.logger.info("[receive_message] no changes in payload")
+            return jsonify({"status": "no_changes"}), 200
+
+        value = changes[0].get("value", {})
         messages = value.get("messages", [])
 
         if not messages:
@@ -157,7 +164,8 @@ def receive_message():
             return jsonify({"status": "no_message"}), 200
 
         msg = messages[0]
-        text = msg.get("text", {}).get("body", "").strip()
+        text = (msg.get("text", {}) or {}).get("body", "")
+        text = text.strip() if isinstance(text, str) else ""
         from_number = msg.get("from")
 
         app.logger.info(f"[receive_message] text={text} from={from_number}")
